@@ -28,32 +28,71 @@ def tokenize(text):
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql('SELECT * FROM disaster_response', engine)
 # load model
-# with open("../models/classifier.pkl", "rb") as input_file:
-#     model = pickle.load(input_file)
+
 model = joblib.load("../models/classifier.pkl")
-# index webpage displays cool visuals and receives user input text for model
+
 @app.route('/')
 @app.route('/index')
 def index():
 
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
-    y = df.drop(['id', 'message', 'original', 'genre'], axis=1).astype(float)
-    cat_names = y.columns.values
-    cat_counts = [sum(y[x]) for x in cat_names]
-    corr = y.corr()
-    labels = y.columns.values
+    lnn = 0
+    # words = []
+    for i in range(100):
+        lnn += len(df['message'].iloc[i].split(' '))
+    avg1 = lnn/float(100)
 
+    lnn = 0
+    for i in range(100, 200):
+        lnn += len(df['message'].iloc[i].split(' '))
+    avg2 = lnn/float(int(len(df)/5))
+
+    lnn = 0
+    for i in range(200, 300):
+        lnn += len(df['message'].iloc[i].split(' '))
+    avg3 = lnn/float(100)
+
+    lnn = 0
+    for i in range(300, 400):
+        lnn += len(df['message'].iloc[i].split(' '))
+    avg4 = lnn/float(100)
+
+    lnn = 0
+    for i in range(400, 500):
+        lnn += len(df['message'].iloc[i].split(' '))
+    avg5 = lnn/float(100)
+
+    div_n = ['0 - 100', '100-200', '200-300', '300-400', '400-500']
+    av_ls = [avg1, avg2, avg3, avg4, avg5]
+
+    y = df.drop(['id', 'message', 'original', 'genre'], axis = 1).astype(float)
+    cat_name = y.columns.values
+    cat_ctr = [sum(y[x]) for x in cat_name]
+    
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
                 Bar(
-                    x=cat_names,
-                    y=cat_counts
+                    x = div_n,
+                    y = av_ls
+                )
+            ],
+                'layout': {
+                    'title': 'Average Message Lengths per 100 Messages for first 500 messages',
+                    'yaxis': {
+                        'title': "Average"
+                    },
+                    'xaxis': {
+                        'title': "Interval"
+                    }
+                }
+        },
+        {
+            'data': [
+                Bar(
+                    x = cat_name,
+                    y = cat_ctr
                 )
             ],
 
@@ -71,7 +110,7 @@ def index():
 
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
-    graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+    graphJSON = json.dumps(graphs, cls = plotly.utils.PlotlyJSONEncoder)
 
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
