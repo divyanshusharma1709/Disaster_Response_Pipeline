@@ -3,8 +3,8 @@
 This project aims to classify messsages at the time of a disaster into one of 36 categories. The dataset is provided by [Figure Eight](https://www.figure-eight.com). A Random Forest Classifier is used to classify the message into one of the categories.
 
 ### The Project consists of the following steps
-1. Data Preprocessing: Involves analyzing and cleaning the data (removing duplicates, Removing NaN values, separating columns into features). Further details and code are available in the [ETL Notebook](ETL Pipeline Preparation.ipynb)
-2. Model Training: Features were generated and a Classifier was trained on the data using a pipeline. For further details and code, see [ML Notebook](ML Pipeline Preparation.ipynb)
+1. Data Preprocessing: Involves analyzing and cleaning the data (removing duplicates, Removing NaN values, separating columns into features). Further details and code are available in the ETL Pipeline Preparation.ipynb notebook.
+2. Model Training: Features were generated and a Classifier was trained on the data using a pipeline. For further details and code, see ML Pipeline Preparation.ipynb notebook.
 3. Web Application: Deploy a web app to use the trained model to classify messages.
 
 ### Instructions
