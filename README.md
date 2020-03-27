@@ -1,5 +1,4 @@
 # Disaster_Response_Pipeline
-summary of the project, how to run the Python scripts and web app, and an explanation of the files in the repository. Comments are used effectively and each function has a docstring.
 
 This project aims to classify messsages at the time of a disaster into one of 36 categories. The dataset is provided by [Figure Eight](https://www.figure-eight.com). A Random Forest Classifier is used to classify the message into one of the categories.
 
