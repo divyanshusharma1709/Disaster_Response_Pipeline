@@ -24,18 +24,20 @@ from sklearn.externals import joblib
 
 
 def load_data(database_filepath):
+    """Load table from SQL database and prepare Features and Labels"""
     engine = create_engine('sqlite:///{}'.format(database_filepath))
-    df = pd.read_sql("SELECT * FROM disaster_response",engine) 
+    df = pd.read_sql("SELECT * FROM disaster_response",engine)
     ls = df.columns[4:]
     Y = None
     for el in ls:
         Y = pd.concat([Y, df[el]], axis = 1)
-    X = df['message'] 
+    X = df['message']
     Y["related"].replace({2: 0}, inplace=True)
     return X, Y, Y.columns.values
 
 
 def tokenize(text):
+    """Remove Punctuation, Case Normalize the text and perform Lemmatization"""
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9]", " ", text)
     words = word_tokenize(text)
@@ -45,7 +47,8 @@ def tokenize(text):
 
 
 def build_model():
-    pipeline = Pipeline([('vect', CountVectorizer(tokenizer = tokenize)), 
+    """Build ML Pipeline and use GridSearchCV"""
+    pipeline = Pipeline([('vect', CountVectorizer(tokenizer = tokenize)),
                     ('tfidf', TfidfTransformer()),
                     ('clf', RandomForestClassifier())])
     parameters = {
@@ -57,12 +60,14 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """Evaluate the model on the test set"""
     pred = model.predict(X_test)
     print(classification_report(Y_test.values, pred, target_names = Y.columns.values))
 
 
 def save_model(model, model_filepath):
-    joblib.dump(model, model_filepath, compress = True) 
+    """Save the model to use it on the web app"""
+    joblib.dump(model, model_filepath, compress = True)
 
 
 def main():
@@ -71,13 +76,13 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 

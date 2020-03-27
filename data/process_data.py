@@ -2,19 +2,22 @@ import sys
 import pandas
 from sqlalchemy import create_engine
 
+
 def load_data(messages_filepath, categories_filepath):
+    """Load data from CSV files and Merge them"""
     messages = pandas.read_csv('data/disaster_messages.csv')
     categories = pandas.read_csv('data/disaster_categories.csv')
     df = messages.merge(categories)
     return df
 
 def clean_data(df):
+    """Clean the dataset: Remove Duplicates and NaN values"""
     categories = df['categories'].str.split(';', expand = True)
     row = categories.loc[0]
     category_colnames = [cat[:-2] for cat in row]
     categories.columns = category_colnames
     for column in categories:
-        categories[column] = categories[column].str[-1]    
+        categories[column] = categories[column].str[-1]
         categories[column] = categories[column].astype(int)
     df = df.drop(['categories'], axis = 1)
     df = pandas.concat([df, categories], axis = 1)
@@ -25,12 +28,11 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """Save the dataset in an SQL Database"""
     engine = create_engine('sqlite:///{}'.format(database_filename))
     df.to_sql('disaster_response', engine, if_exists='replace', index=False)
 
-import os
 def main():
-    os.listdir()
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
@@ -41,12 +43,12 @@ def main():
 
         print('Cleaning data...')
         df = clean_data(df)
-        
+
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
         save_data(df, database_filepath)
-        
+
         print('Cleaned data saved to database!')
-    
+
     else:
         print('Please provide the filepaths of the messages and categories '\
               'datasets as the first and second argument respectively, as '\
